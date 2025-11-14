@@ -1,0 +1,21 @@
+{
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/"
+        }
+    ],
+    "redirects": [
+        {
+            "source": "/(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "docs.moonride.fun"
+                }
+            ],
+            "destination": "https://moonride-fun.gitbook.io/documentation",
+            "permanent": true
+        }
+    ]
+}

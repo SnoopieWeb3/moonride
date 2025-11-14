@@ -1,0 +1,17 @@
+body {
+     -webkit-user-drag: none !important;
+     user-select: none !important;
+     -webkit-user-select: none !important;
+     background-color: #fff;
+     overflow-x: hidden !important;
+     font-family: "Avenue Mono", sans-serif;
+     font-weight: 400;
+     font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenue Mono';
+  src: url('./fonts/Avenue-Mono.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
