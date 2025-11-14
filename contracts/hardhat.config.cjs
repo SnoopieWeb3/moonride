@@ -1,4 +1,9 @@
-require("@matterlabs/hardhat-zksync");
+require("@nomiclabs/hardhat-waffle");
+require("@nomicfoundation/hardhat-verify");
+
+require('dotenv').config();
+
+const privateKey = process.env.PRIVATE_KEY;
 
 module.exports = {
   solidity: {
@@ -16,50 +21,23 @@ module.exports = {
       },
     ],
   },
-  zksolc: {
-    version: "1.5.13",
-    settings: {
-      codegen: "evmla"
-    },
-  },
-  defaultNetwork: "abstractTestnet",
-  networks: {
-    abstractTestnet: {
-      url: "https://api.testnet.abs.xyz",
-      ethNetwork: "sepolia",
-      zksync: true,
-      chainId: 11124,
-    },
-    abstractMainnet: {
-      url: "https://api.mainnet.abs.xyz",
-      ethNetwork: "mainnet",
-      zksync: true,
-      chainId: 2741,
-    },
-  },
   etherscan: {
-    apiKey: {
-      abstractTestnet: "TACK2D1RGYX9U7MC31SZWWQ7FCWRYQ96AD",
-      abstractMainnet: "IEYKU3EEM5XCD76N7Y7HF9HG7M9ARZ2H4A",
+    apiKey: process.env.ETHERSCAN_API_KEY
+  },
+  networks: {
+    testnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      chainId: 97,
+      accounts: [privateKey],
     },
-    customChains: [
-      {
-        network: "abstractTestnet",
-        chainId: 11124,
-        urls: {
-          apiURL: "https://api-sepolia.abscan.org/api",
-          browserURL: "https://sepolia.abscan.org/",
-        },
-      },
-      {
-        network: "abstractMainnet",
-        chainId: 2741,
-        urls: {
-          apiURL: "https://api.abscan.org/api",
-          browserURL: "https://abscan.org/",
-        },
-      },
-    ],
+    mainnet: {
+      url: "https://bsc-dataseed.binance.org/",
+      chainId: 56,
+      accounts: [privateKey],
+    },
+  },
+  sourcify: {
+    enabled: true
   },
   paths: {
     sources: "./src"

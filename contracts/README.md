@@ -1,4 +1,4 @@
 ## npx hardhat clean
-## npx hardhat compile --network abstractTestnet
-## npx hardhat deploy-zksync --script deploy.js --network abstractTestnet
-## npx hardhat verify --network abstractTestnet <contractAddress>
+## npx hardhat compile
+## npx hardhat deploy --script ./scripts/deploy.js --network testnet
+## npx hardhat verify --network testnet <contractAddress>
