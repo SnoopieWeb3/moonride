@@ -263,7 +263,7 @@ const Home = () => {
             const message = text.trim();
             socketRef.current.emit('message', { market, message, type: "text" });
             setText('');
-            chatInputRef.current.blur();
+            chatInputRef.current.focus();
         }
         else {
             setText('');
