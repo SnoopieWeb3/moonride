@@ -927,7 +927,7 @@ table {
 
 .ai-analyzing {
     color: #414141;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .ai-content {
@@ -971,10 +971,8 @@ table {
     animation-delay: 0.4s;
 }
 
-
-
 .prediction-result {
-    font-size: 14px;
+    font-size: 12px;
     font-family: "Avenue Mono", sans-serif !important;
     opacity: 0.8;
     font-weight: 600;

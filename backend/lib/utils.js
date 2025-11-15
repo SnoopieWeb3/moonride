@@ -20,7 +20,10 @@ const getPublicClient = async () => {
     const publicClient = createPublicClient({
         chain: bscTestnet,
         transport: webSocket(bscTestnetWss, {
-            reconnect: true
+            reconnect: {
+                attempts: Infinity,
+                delay: 100
+            }
         }),
     });
 
@@ -28,7 +31,7 @@ const getPublicClient = async () => {
 
 }
 
-const delayFor = async (ms=5000) => {
+const delayFor = async (ms = 5000) => {
     return new Promise((resolve, _reject) => {
         setTimeout(() => {
             resolve(true);
@@ -48,7 +51,10 @@ const getWalletClient = async () => {
         account,
         chain: bscTestnet,
         transport: webSocket(bscTestnetWss, {
-            reconnect: true
+            reconnect: {
+                attempts: Infinity,
+                delay: 100
+            }
         }),
     });
 
