@@ -1181,7 +1181,6 @@ const Home = () => {
                                                                         </div>
                                                                         :
                                                                         <>
-                                                                            {/*
                                                                             <center>
                                                                                 <div className='row my-3 align-items-center justify-content-center px-5'>
                                                                                     <div className='choose-bet-type'>
@@ -1203,7 +1202,6 @@ const Home = () => {
                                                                                     </div>
                                                                                 </div>
                                                                             </center>
-                                                                            */}
 
                                                                             <div className='row d-flex justify-content-center align-items-center'>
                                                                                 <div className='col-md-auto my-3 mobile-no-margin d-flex align-items-center justify-content-center'>
