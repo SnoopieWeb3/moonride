@@ -1106,8 +1106,10 @@ const initializeEventListeners = async () => {
         onError: async (_error) => {
             console.log(`On-chain event listener quit, restarting...`, _error);
             if (unwatch) await unwatch();
-            console.log(`Socket disconnected, restarting...`);
-            initializeEventListeners();
+            setTimeout(() => {
+                console.log(`Socket disconnected, restarting...`);
+                initializeEventListeners();
+            }, 5000);
         }
     });
 

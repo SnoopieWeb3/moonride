@@ -10,21 +10,16 @@ const randomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const bscTestnetWss = 'wss://bsc-testnet-rpc.publicnode.com';
+const bscTestnetWss = 'wss://data-seed-prebsc-1-s1.binance.org:8545';
 
 const getPublicClient = async () => {
 
-    const { createPublicClient, webSocket } = await import("viem");
+    const { createPublicClient, http } = await import("viem");
     const { bscTestnet } = await import("viem/chains");
 
     const publicClient = createPublicClient({
         chain: bscTestnet,
-        transport: webSocket(bscTestnetWss, {
-            reconnect: {
-                attempts: Infinity,
-                delay: 100
-            }
-        }),
+        transport: http()
     });
 
     return publicClient;
@@ -41,7 +36,7 @@ const delayFor = async (ms = 5000) => {
 
 const getWalletClient = async () => {
 
-    const { createWalletClient, webSocket } = await import("viem");
+    const { createWalletClient, http } = await import("viem");
     const { bscTestnet } = await import("viem/chains");
     const { privateKeyToAccount } = await import("viem/accounts");
 
@@ -50,12 +45,7 @@ const getWalletClient = async () => {
     const walletClient = createWalletClient({
         account,
         chain: bscTestnet,
-        transport: webSocket(bscTestnetWss, {
-            reconnect: {
-                attempts: Infinity,
-                delay: 100
-            }
-        }),
+        transport: http(),
     });
 
     return walletClient;
