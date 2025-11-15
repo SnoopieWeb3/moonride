@@ -1067,53 +1067,70 @@ const VaultABI = require('./lib/abis/Vault.json');
 
 const initializeEventListeners = async () => {
 
-    let publicClient = await getPublicClient();
+    let unwatch;
+    let interval;
 
-    console.log(`On-chain event listeners started for Vault (${process.env.VAULT_ADDRESS})`);
+    try {
 
-    const remitDeposit = async (data, txHash) => {
+        let publicClient = await getPublicClient();
 
-        await psql.query({
-            text: `UPDATE accounts SET balance = balance + $1, points = points + $2, leaderboard_points = leaderboard_points + $2 WHERE address = $3`,
-            values: [parseFloat(data.amount), pointsDistribution.forDeposits, data.account]
-        });
+        console.log(`On-chain event listeners started for Vault (${process.env.VAULT_ADDRESS})`);
 
-        const time = Math.floor(new Date().getTime() / 1000);
+        const remitDeposit = async (data, txHash) => {
 
-        try {
             await psql.query({
-                text: `INSERT INTO transaction_history (address, amount, txn_type, txhash, date_created) VALUES ($1, $2, $3, $4, $5)`,
-                values: [data.account, data.amount, 'DEPOSIT', txHash, time]
+                text: `UPDATE accounts SET balance = balance + $1, points = points + $2, leaderboard_points = leaderboard_points + $2 WHERE address = $3`,
+                values: [parseFloat(data.amount), pointsDistribution.forDeposits, data.account]
             });
+
+            const time = Math.floor(new Date().getTime() / 1000);
+
+            try {
+                await psql.query({
+                    text: `INSERT INTO transaction_history (address, amount, txn_type, txhash, date_created) VALUES ($1, $2, $3, $4, $5)`,
+                    values: [data.account, data.amount, 'DEPOSIT', txHash, time]
+                });
+            }
+            catch (error) { }
+
+            console.log(`Deposit confirmed: ${parseFloat(data.amount) / 1e18} ETH (${data.account})`);
+
+        }
+
+        interval = setInterval(async () => {
+            await publicClient.getBlockNumber();
+        }, 5000);
+
+        unwatch = publicClient.watchContractEvent({
+            address: process.env.VAULT_ADDRESS,
+            abi: VaultABI,
+            eventName: 'Deposit',
+            batch: false,
+            onLogs: async (logs) => {
+                for (let log of logs) {
+                    const data = log.args;
+                    remitDeposit(data, log.transactionHash);
+                }
+            },
+            onError: async (_error) => {
+                console.log(`On-chain event listener quit, restarting...`, _error);
+                clearInterval(interval);
+                unwatch();
+                initializeEventListeners();
+            }
+        });
+    }
+    catch (error) {
+        try {
+            clearInterval(interval);
         }
         catch (error) { }
-
-        console.log(`Deposit confirmed: ${parseFloat(data.amount) / 1e18} ETH (${data.account})`);
-
-    }
-
-    const interval = setInterval(async () => {
-        await publicClient.getBlockNumber();
-    }, 5000);
-
-    const unwatch = publicClient.watchContractEvent({
-        address: process.env.VAULT_ADDRESS,
-        abi: VaultABI,
-        eventName: 'Deposit',
-        batch: false,
-        onLogs: async (logs) => {
-            for (let log of logs) {
-                const data = log.args;
-                remitDeposit(data, log.transactionHash);
-            }
-        },
-        onError: async (_error) => {
-            console.log(`On-chain event listener quit, restarting...`, _error);
-            clearInterval(interval);
+        try {
             unwatch();
             initializeEventListeners();
         }
-    });
+        catch (error) { }
+    }
 
 }
 
