@@ -10,7 +10,7 @@ const randomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const bscTestnetWss = 'wss://bsc-rpc.publicnode.com';
+const bscTestnetWss = 'wss://bsc-testnet.drpc.org';
 
 const getPublicClient = async () => {
 
