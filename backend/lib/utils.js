@@ -28,6 +28,14 @@ const getPublicClient = async () => {
 
 }
 
+const delayFor = async (ms=5000) => {
+    return new Promise((resolve, _reject) => {
+        setTimeout(() => {
+            resolve(true);
+        }, ms);
+    });
+}
+
 const getWalletClient = async () => {
 
     const { createWalletClient, webSocket } = await import("viem");
@@ -108,5 +116,6 @@ module.exports = {
     COMMISSION,
     SECONDS_IN_A_WEEK,
     metadataURL,
-    REFERRALS_CAP
+    REFERRALS_CAP,
+    delayFor
 }

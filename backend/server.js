@@ -24,6 +24,10 @@ const {
 } = require("./lib/utils");
 
 const {
+    trainAndPredict
+} = require("./lib/tf-model");
+
+const {
     loadRankings,
     socketAuth,
     getFallbackPrices,
@@ -590,6 +594,8 @@ const startMarket = async () => {
 
     let leaderboard = {};
 
+    let pricesList = {};
+
     for (let symbol of symbols) {
 
         leaderboard[symbol] = { ...leaderboardTimes };
@@ -629,6 +635,13 @@ const startMarket = async () => {
         let bullishCount = null;
 
         let bearishCount = null;
+
+        let hasFetched = false;
+
+        const AIResult = {
+            initialized: false,
+            result: null
+        };
 
         const onlineUsers = new Set();
 
@@ -732,6 +745,35 @@ const startMarket = async () => {
 
                 counter++;
 
+                const predictAndGetResults = async (prices, timestamps, pricesList) => {
+                    const results = await trainAndPredict(prices, timestamps, pricesList, symbol);
+                    const start = results[0].price;
+                    const end = results[results.length - 1].price;
+                    let output = null;
+                    if (end < start) {
+                        output = 'DOWN';
+                    }
+                    else if (end > start) {
+                        output = 'UP';
+                    }
+                    else if (end == start) {
+                        output = 'MID';
+                    }
+                    AIResult.initialized = true;
+                    AIResult.result = output;
+                }
+
+                if (pricesList.hasOwnProperty(symbol)) {
+                    if (hasFetched == true) {
+                        if (counter == 1) {
+                            const assetPrices = pricesList[symbol].map(x => x.price);
+                            const assetTimestamps = pricesList[symbol].map(x => Math.floor(x.timestamp));
+                            predictAndGetResults(assetPrices, assetTimestamps, pricesList);
+                            pricesList[symbol].length = 0;
+                        }
+                    }
+                }
+
                 if (counter == 10) {
                     executeAutoTrades(symbol);
                 }
@@ -762,6 +804,11 @@ const startMarket = async () => {
                     state = 1;
 
                     roundIndex++;
+
+                    hasFetched = true;
+
+                    AIResult.initialized = false;
+                    AIResult.result = null;
 
                     if (globalStates[symbol].roundPrices.length > 0) {
                         roundStartPrice = globalStates[symbol].roundPrices?.[0]?.price || 0;
@@ -848,6 +895,8 @@ const startMarket = async () => {
                     roundStartPrice = 0;
                     roundEndPrice = 0;
 
+
+
                 }
 
                 const responseObject = {
@@ -875,6 +924,7 @@ const startMarket = async () => {
                     rewardsDistribution: progression,
                     bullishCount,
                     bearishCount,
+                    AIResult,
                     emojis: marketStore.emojis
                 };
 
@@ -949,9 +999,12 @@ const startMarket = async () => {
                 const parsed = JSON.parse(data);
                 if (parsed.data && parsed.data.e === 'trade') {
                     const trade = parsed.data;
-                    pricesCache[trade.s.replace("USDT", '')] = {
-                        price: parseFloat(trade.p),
-                        timestamp: Math.floor(trade.E / 1000),
+                    const price = parseFloat(trade.p);
+                    const timestamp = Math.floor(trade.T / 1000);
+                    const index = trade.s.replace("USDT", '');
+                    pricesCache[index] = {
+                        price,
+                        timestamp
                     };
                 }
             } catch (err) {
@@ -988,6 +1041,12 @@ const startMarket = async () => {
         for (let key of Object.keys(pricesCache)) {
             const item = pricesCache[key];
             globalStates[key].roundPrices.push(item);
+            if (pricesList.hasOwnProperty(key)) {
+                pricesList[key].push(item);
+            }
+            else {
+                pricesList[key] = [item];
+            }
         }
 
         try {
@@ -1009,7 +1068,7 @@ const VaultABI = require('./lib/abis/Vault.json');
 
 const initializeEventListeners = async () => {
 
-    const publicClient = await getPublicClient();
+    let publicClient = await getPublicClient();
 
     console.log(`On-chain event listeners started for Vault (${process.env.VAULT_ADDRESS})`);
 
@@ -1049,7 +1108,7 @@ const initializeEventListeners = async () => {
                 remitDeposit(data, log.transactionHash);
             }
         },
-        onError: (_error) => {
+        onError: async (_error) => {
             console.log(`On-chain event listener quit, restarting...`, _error);
             clearInterval(interval);
             unwatch();
