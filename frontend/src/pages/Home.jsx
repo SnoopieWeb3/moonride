@@ -250,7 +250,7 @@ const Home = () => {
 
         let _chats = { ...chatsRef.current };
 
-        _chats[message.market.toLowerCase()].push(message);
+        _chats[message.market?.toLowerCase()].push(message);
 
         chatsRef.current = _chats;
 
@@ -1042,10 +1042,10 @@ const Home = () => {
                                         </div>
 
                                         <div className="px-3 py-2">
-                                            <div className={`ai-placeholder ${prediction.initialized == false ? 'analyzing' : ''}`} data-tooltip-id={'global-tooltip'} data-tooltip-content={'AI Market insights'}>
+                                            <div className={`ai-placeholder ${prediction?.initialized == false ? 'analyzing' : ''}`} data-tooltip-id={'global-tooltip'} data-tooltip-content={'AI Market insights'}>
                                                 <div className='ai-content'>
                                                     <img src={getImageUrl('ai-symbol.png')} className='ai-symbol' />
-                                                    {prediction.initialized == false ?
+                                                    {prediction?.initialized == false ?
                                                         <>
                                                             <span className='ai-analyzing mx-2'>Analyzing</span>
                                                             <div class="thinking-indicator">
@@ -1055,7 +1055,7 @@ const Home = () => {
                                                             </div>
                                                         </>
                                                         :
-                                                        <span className={`prediction-result ${prediction.result.toLowerCase()} mx-2`}>{prediction.result}</span>
+                                                        <span className={`prediction-result ${prediction?.result?.toLowerCase()} mx-2`}>{prediction.result}</span>
                                                     }
                                                 </div>
                                             </div>
