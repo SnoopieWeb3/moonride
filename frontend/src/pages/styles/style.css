@@ -912,6 +912,90 @@ table {
         0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
+.ai-placeholder {
+    background-image: linear-gradient(80deg, #414141, #000000);
+    padding: 2px;
+    border-radius: 15px;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.ai-placeholder.analyzing {
+    background-size: 300% 300%;
+    animation: analyze 1.5s ease-in-out infinite alternate-reverse, gradientShift 3s linear infinite;
+}
+
+.ai-analyzing {
+    color: #414141;
+    font-size: 14px;
+}
+
+.ai-content {
+    background-color: #000000;
+    border-radius: 15px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.thinking-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 24px;
+    border-radius: 12px;
+    padding: 5px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    margin: 0 3px;
+    background-color: #999;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: blink 1.4s infinite;
+}
+
+.dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+
+
+.prediction-result {
+    font-size: 14px;
+    font-family: "Avenue Mono", sans-serif !important;
+    opacity: 0.8;
+    font-weight: 600;
+}
+
+.prediction-result.up {
+    color: #3F754B;
+}
+
+.prediction-result.down {
+    color: #9B5256;
+}
+
+.prediction-result.mid {
+    color: #FFB662;
+}
+
+.ai-symbol {
+    width: 20px;
+}
+
 .popup-button.bullish {
     color: #FFFFFF;
     background-color: #3F754B;
@@ -1929,6 +2013,46 @@ table {
 
 .profile-username-text {
     font-size: 12px;
+}
+
+
+@keyframes blink {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0.4;
+        transform: translateY(0);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes analyze {
+    from {
+        background-position: 0px -120%;
+    }
+
+    to {
+        background-position: 0px 120%;
+    }
 }
 
 @keyframes shimmer {

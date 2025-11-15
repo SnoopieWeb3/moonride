@@ -185,6 +185,11 @@ const Home = () => {
 
     const [resultData, setResultData] = useState({ user: null, system: null });
 
+    const [prediction, setPrediction] = useState({
+        initialized: false,
+        result: null
+    });
+
     const [leaderboardData, setLeaderboardData] = useState({});
 
     const [sentiments, setSentiments] = useState({ bullish: { value: 50, width: 50 }, bearish: { value: 50, width: 50 } });
@@ -278,6 +283,8 @@ const Home = () => {
 
         const bullish = data.bullishCount;
         const bearish = data.bearishCount;
+
+        setPrediction(data.AIResult);
 
         setEmojis(data.emojis);
 
@@ -884,10 +891,10 @@ const Home = () => {
 
                                         <TransactionHistory />
 
-                                        <img src={getImageUrl('stream.png')} className='mx-3 stream-icon' data-tooltip-id={'global-tooltip'} data-tooltip-content={`Live streams are coming`}/>
+                                        <img src={getImageUrl('stream.png')} className='mx-3 stream-icon' data-tooltip-id={'global-tooltip'} data-tooltip-content={`Live streams are coming`} />
 
                                         <Network />
-                                        
+
                                     </div>
 
                                     <Swiper
@@ -936,7 +943,7 @@ const Home = () => {
 
                                                 <div className='col-md-auto'>
                                                     <div className='d-flex align-items-center justify-content-center'>
-                                                        
+
                                                         <div className='chat-index ms-2 my-2 text-bold'>
                                                             <span className='px-3'># {round}</span>
                                                         </div>
@@ -1034,9 +1041,29 @@ const Home = () => {
 
                                         </div>
 
+                                        <div className="px-3 py-2">
+                                            <div className={`ai-placeholder ${prediction.initialized == false ? 'analyzing' : ''}`} data-tooltip-id={'global-tooltip'} data-tooltip-content={'AI Market insights'}>
+                                                <div className='ai-content'>
+                                                    <img src={getImageUrl('ai-symbol.png')} className='ai-symbol' />
+                                                    {prediction.initialized == false ?
+                                                        <>
+                                                            <span className='ai-analyzing mx-2'>Analyzing</span>
+                                                            <div class="thinking-indicator">
+                                                                <span class="dot"></span>
+                                                                <span class="dot"></span>
+                                                                <span class="dot"></span>
+                                                            </div>
+                                                        </>
+                                                        :
+                                                        <span className={`prediction-result ${prediction.result.toLowerCase()} mx-2`}>{prediction.result}</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div className='px-3'>
 
-                                            <div className='text-white market-index-title mt-4 mb-2'>
+                                            <div className='text-white market-index-title mt-3 mb-2'>
                                                 Total Value Staked <Info text={`Total amount staked by all users on 'UP' and 'DOWN' into the ${market?.toUpperCase()} pool`}></Info>
                                             </div>
 
