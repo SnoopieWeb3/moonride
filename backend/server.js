@@ -805,11 +805,6 @@ const startMarket = async () => {
 
                     roundIndex++;
 
-                    hasFetched = true;
-
-                    AIResult.initialized = false;
-                    AIResult.result = null;
-
                     if (globalStates[symbol].roundPrices.length > 0) {
                         roundStartPrice = globalStates[symbol].roundPrices?.[0]?.price || 0;
                         globalStates[symbol].roundPrices = [globalStates[symbol].roundPrices[0]];
@@ -855,6 +850,10 @@ const startMarket = async () => {
                 }
 
                 if (counter == 60) { // Watching lasts for 30 seconds (+ 30)
+
+                    hasFetched = true;
+                    AIResult.initialized = false;
+                    AIResult.result = null;
 
                     state = 0;
                     counter = 0;
